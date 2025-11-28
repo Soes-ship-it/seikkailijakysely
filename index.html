@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seikkailijakyselyn Demo</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+    .question { margin-bottom: 20px; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    #result { margin-top: 30px; font-weight: bold; font-size: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Seikkailijakysely – Demo</h1>
+  <p>Tämä on tekninen demopohja. 3 kysymystä, pisteytys 5 hahmolle.</p>
+
+  <div id="quiz"></div>
+  <button id="submitBtn">Näytä tulos</button>
+  <div id="result"></div>
+
+<script>
+// Hahmot
+const characters = ["Kartturi", "Diplomaatti", "Rohkea Tutkija", "Tiimihengen Nostattaja", "Hiljainen Tarkkailija"];
+
+// 3 esimerkkikysymystä (oikeat tulevat myöhemmin)
+const questions = [
+  {
+    text: "Millainen olet ryhmätilanteissa?",
+    answers: [
+      { text: "Johdatan muita", scores: [2,0,1,1,0] },
+      { text: "Kuuntelen ja sovittelen", scores: [0,2,0,1,1] },
+      { text: "Teen rohkeita aloitteita", scores: [1,0,2,0,0] }
+    ]
+  },
+  {
+    text: "Miten suhtaudut uuteen kulttuuriin?",
+    answers: [
+      { text: "Syvennyn ja tutkin", scores: [1,0,2,0,0] },
+      { text: "Kysyn ja keskustelen", scores: [0,2,0,1,0] },
+      { text: "Havainnoin ensin rauhassa", scores: [0,0,0,0,2] }
+    ]
+  },
+  {
+    text: "Mistä innostut eniten?",
+    answers: [
+      { text: "Reittien suunnittelusta", scores: [2,0,0,0,0] },
+      { text: "Ihmisten kohtaamisesta", scores: [0,2,0,2,0] },
+      { text: "Uusista haasteista", scores: [0,0,2,0,0] }
+    ]
+  }
+];
+
+// Luo kysymykset sivulle
+const quizDiv = document.getElementById("quiz");
+questions.forEach((q, qi) => {
+  const qDiv = document.createElement("div");
+  qDiv.className = "question";
+  qDiv.innerHTML = `<p><strong>${q.text}</strong></p>`;
+
+  q.answers.forEach((a, ai) => {
+    const id = `q${qi}_a${ai}`;
+    qDiv.innerHTML += `
+      <label>
+        <input type="radio" name="q${qi}" value="${ai}"> ${a.text}
+      </label><br>
+    `;
+  });
+
+  quizDiv.appendChild(qDiv);
+});
+
+// Laske tulos
+const submitBtn = document.getElementById("submitBtn");
+submitBtn.onclick = function() {
+  let totalScores = [0,0,0,0,0];
+
+  for (let i = 0; i < questions.length; i++) {
+    const selected = document.querySelector(`input[name='q${i}']:checked`);
+    if (!selected) { alert("Vastaa kaikkiin kysymyksiin!"); return; }
+
+    const ansIndex = parseInt(selected.value);
+    const scores = questions[i].answers[ansIndex].scores;
+
+    for (let s = 0; s < totalScores.length; s++) {
+      totalScores[s] += scores[s];
+    }
+  }
+
+  const bestIndex = totalScores.indexOf(Math.max(...totalScores));
+  document.getElementById("result").textContent = `Olet: ${characters[bestIndex]}!`;
+};
+</script>
+</body>
+</html>
